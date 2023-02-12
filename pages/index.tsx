@@ -2,11 +2,12 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { selectAuthState, setAuthState } from "../store/authSlice";
+import { selectAuthState, setAuthState, setUserProfile } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Button from '@mui/material/Button';
 import Layout from '../components/layout/layout';
 import { wrapper } from "../store/store";
+import { getMe } from '../utility/request';
 const Home: NextPage = () => {
   return (
     <Layout>
@@ -23,23 +24,6 @@ const Home: NextPage = () => {
         </main>
       </div>
     </Layout>
-
   )
 }
-export const getServerSideProps = wrapper.getServerSideProps(
-  (store) =>
-    async ({ params }) => {
-      // we can set the initial state from here
-      await store.dispatch(setAuthState(false));
-
-      console.log("State on server", store.getState());
-
-      return {
-        props: {
-          authState: false,
-        },
-      };
-    }
-);
-
 export default Home

@@ -1,12 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import { logout, setAuthState, setUserProfile } from "../store/authSlice";
-import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
 
 let bearer = '';
-let apiBaseUrl = process.env.API_URL;
-const dispatch = useDispatch();
-let pipeline: any[] = [];
+let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 function postHeader(params: any) {
     bearer = bearer ? bearer : 'Bearer ' + getCookie('token');
     let header: any = {
@@ -75,7 +72,8 @@ function withQuery(parameters: any) {
 }
 
 function redirectAuth() {
-    dispatch(logout())
+    setCookie('token', '', 1);
+    bearer = ''
 }
 
 function getDeepParam(obj: any) {
@@ -165,9 +163,10 @@ export async function auth(username: string, password: string) {
             password: password,
         },
     };
-    let res = await request('/auth/login', option);
-    if (res.statusCode == 200 && res.data.tokenUser) {
-        bearer = 'Bearer ' + res.data.tokenUser.data;
+    let res = await request('/auth/get-token', option);
+    if (res.statusCode == 200 && res.data) {
+        bearer = 'Bearer ' + res.data;
+        setCookie('token', res.data, 3)
     }
     return res;
 }
@@ -177,10 +176,36 @@ export async function getMe() {
         method: 'GET',
         params: {},
     };
+
     let res = await request('/users/me', option);
-    if (res.statusCode == 200) {
-        dispatch(setAuthState(true))
-        dispatch(setUserProfile(res.data))
+    return res;
+}
+export async function register(
+    username: string, 
+    password: string, 
+    confirmPassword: string, 
+    name: string,
+    email: string = '',
+    phone: string = '',
+    address: string = '',
+) {
+    const option = {
+        method: 'POST',
+        params: {
+            username,
+            password,
+            confirmPassword,
+            name,
+            email,
+            phone,
+            address
+        },
+    };
+
+    let res = await request('/auth/register', option);
+    if (res.statusCode == 200 && res.data) {
+        bearer = 'Bearer ' + res.data;
+        setCookie('token', res.data, 3)
     }
     return res;
 }

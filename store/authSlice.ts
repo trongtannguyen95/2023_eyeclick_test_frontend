@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { AppState } from "./store";
 import { HYDRATE } from "next-redux-wrapper";
-import { useRouter } from 'next/router'
+import { setCookie } from "../utility/request";
 export interface AuthState {
   authState: boolean;
   userProfile: any
@@ -23,16 +23,14 @@ export const authSlice = createSlice({
       state.userProfile = action.payload;
     },
     logout(state) {
-      const router = useRouter()
       state.authState = false
       state.userProfile = null
-      router.push('/')
+      setCookie('token', '', 1)
     }
   },
 
   extraReducers: {
     [HYDRATE]: (state, action) => {
-      console.log("HYDRATE", action.payload);
       return {
         ...state,
         ...action.payload.auth,
@@ -44,5 +42,6 @@ export const authSlice = createSlice({
 export const { setAuthState, logout, setUserProfile } = authSlice.actions;
 
 export const selectAuthState = (state: AppState) => state.auth.authState;
+export const selectUserProfile = (state: AppState) => state.auth.userProfile;
 
 export default authSlice.reducer;
