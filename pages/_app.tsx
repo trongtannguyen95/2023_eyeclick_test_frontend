@@ -4,6 +4,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
 import { selectAuthState, setAuthState, setUserProfile, logout } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { getCookie } from '../utility/request';
 import { useEffect } from 'react';
 import { getMe } from '../utility/request';
 import { wrapper } from "../store/store";
@@ -30,12 +31,14 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
     checkLogin()
   }, [])
   const checkLogin = async () => {
-    if (authState) return false
+    if (authState || !getCookie('token')) return false
     try {
       const resGetMe = await getMe()
       if (resGetMe.statusCode == 200 && resGetMe.data) {
         dispatch(setAuthState(true));
         dispatch(setUserProfile(resGetMe.data));
+      }else{
+        dispatch(logout())
       }
     } catch (err) {
       dispatch(logout())

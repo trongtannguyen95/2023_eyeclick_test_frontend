@@ -5,11 +5,13 @@ import { HYDRATE } from "next-redux-wrapper";
 export interface SystemState {
   alert: boolean;
   alertMessage: string,
+  search: string,
 }
 
 const initialState: SystemState = {
   alert: false,
   alertMessage: '',
+  search: '',
 };
 export const systemSlice = createSlice({
   name: "system",
@@ -20,6 +22,9 @@ export const systemSlice = createSlice({
     },
     setAlertMessage(state, action) {
       state.alertMessage = action.payload;
+    },
+    setSearch(state, action) {
+      state.search = action.payload;
     },
   },
 
@@ -33,9 +38,10 @@ export const systemSlice = createSlice({
   },
 });
 
-export const { setAlert ,setAlertMessage} = systemSlice.actions;
+export const { setAlert, setAlertMessage, setSearch } = systemSlice.actions;
 
 export const selectAlert = (state: AppState) => state.system.alert;
-export const selectalertMessage = (state: AppState) => state.system.alertMessage;
+export const selectAlertMessage = (state: AppState) => state.system.alertMessage;
+export const selectSearch = (state: AppState) => state.system.search;
 
 export default systemSlice.reducer;

@@ -181,13 +181,10 @@ export async function getMe() {
     return res;
 }
 export async function register(
-    username: string, 
-    password: string, 
-    confirmPassword: string, 
+    username: string,
+    password: string,
+    confirmPassword: string,
     name: string,
-    email: string = '',
-    phone: string = '',
-    address: string = '',
 ) {
     const option = {
         method: 'POST',
@@ -196,9 +193,6 @@ export async function register(
             password,
             confirmPassword,
             name,
-            email,
-            phone,
-            address
         },
     };
 
@@ -208,4 +202,21 @@ export async function register(
         setCookie('token', res.data, 3)
     }
     return res;
+}
+
+export async function getShopItem(
+    currentPage = 1,
+    filters = {}
+) {
+    const res = await request('/shop/get-item-list', {
+        method: 'GET',
+        params: {
+            limit: 9,
+            page: currentPage - 1,
+            filters: Object.assign({}, filters),
+            sorts: [{ sortKey: 'createdAt', sortValue: 'DESC' }],
+        },
+    })
+    return res;
+
 }
